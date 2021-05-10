@@ -37,8 +37,7 @@ class Lesson(models.Model):
 
 class Lesson_Status(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     completed = models.BooleanField(default=False)
 
 

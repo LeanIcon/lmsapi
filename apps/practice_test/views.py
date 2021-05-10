@@ -32,15 +32,7 @@ class QuizListAPI(generics.ListAPIView):
 	]
 
 	def get_queryset(self, *args, **kwargs):
-		queryset = Quiz.objects.filter(roll_out=True).exclude(
-			quiztaker__user=self.request.user)
-		query = self.request.GET.get("q")
-
-		if query:
-			queryset = queryset.filter(
-				Q(name__icontains=query) |
-				Q(description__icontains=query)
-			).distinct()
+		queryset = Quiz.objects.all()
 
 		return queryset
 
@@ -72,34 +64,7 @@ class QuizDetailAPI(generics.RetrieveAPIView):
 
 
 class QuizResultAPI(generics.RetrieveAPIView):
-	serializer_class = QuizDetailSerializer
-	permission_classes = [
-		permissions.IsAuthenticated
-	]
-
-	def post(self, request, *args, **kwargs):
-		quiztaker_id = request.data['quiztaker']
-
-		quiztaker = get_object_or_404(QuizTaker, id=quiztaker_id)
-
-		quiz = Quiz.objects.get(slug=self.kwargs['slug'])
-
-		quiztaker.completed = True
-		correct_answers = 0
-
-		for users_answer in UsersAnswer.objects.filter(quiz_taker=quiztaker):
-			answer = Answer.objects.get(question=users_answer.question, is_correct=True)
-			if users_answer.answer == answer:
-				correct_answers += 1
-			users_answer.answer = None
-
-		quiztaker.percentage = int(
-			correct_answers / quiztaker.quiz.question_set.count() * 100)
-
-		quiztaker.score = int(correct_answers)
-		quiztaker.save()
-
-		return Response(self.get_serializer(quiz).data)
+	pass
 
 
 class SaveUsersAnswer(generics.UpdateAPIView):
@@ -116,12 +81,6 @@ class SaveUsersAnswer(generics.UpdateAPIView):
 		quiztaker = get_object_or_404(QuizTaker, id=quiztaker_id)
 		question = get_object_or_404(Question, id=question_id)
 		answer = get_object_or_404(Answer, id=answer_id)
-
-		# if quiztaker.completed:
-		# 	return Response({
-		# 		"message": "This quiz is already complete. you can't answer any more questions"},
-		# 		status=status.HTTP_412_PRECONDITION_FAILED
-		# 	)
 
 		obj = get_object_or_404(UsersAnswer, quiz_taker=quiztaker, question=question)
 		obj.answer = answer
@@ -145,37 +104,45 @@ class SubmitQuizAPI(generics.GenericAPIView):
 		question = get_object_or_404(Question, id=question_id)
 
 		quiz = Quiz.objects.get(slug=self.kwargs['slug'])
-
-		# if quiztaker.completed:
-		# 	return Response({
-		# 		"message": "This quiz is already complete. You can't submit again"},
-		# 		status=status.HTTP_412_PRECONDITION_FAILED
-		# 	)
+		print('=====================//Debug//=======================')
+		print(answer_id is not None)
+		print(answer_id)
+		print(type(answer_id))
+		print('=====================//Debug//=======================')
 
 		if answer_id is not None:
 			answer = get_object_or_404(Answer, id=answer_id)
+			print('=====================//Debug//=======================')
+			print(answer)
+			print('=====================//Debug//=======================')
 			obj = get_object_or_404(
 				UsersAnswer, quiz_taker=quiztaker, question=question)
 			obj.answer = answer
 			obj.save()
 
 		quiztaker.completed = True
+		quiztaker.total_quizzes_taken += 1
 		correct_answers = 0
 
 		for users_answer in UsersAnswer.objects.filter(quiz_taker=quiztaker):
-			answer = Answer.objects.get(question=users_answer.question, is_correct=True)
-			print(answer)
+			answer = Answer.objects.get(question=users_answer.question, is_correct=True)			
+			print('=====================//Debug//=======================')
+			print(answer) 
 			print(users_answer.answer)
+			print('=====================//Debug//=======================')
 			if users_answer.answer == answer:
 				correct_answers += 1
+
+			obj2 = get_object_or_404(UsersAnswer, quiz_taker=quiztaker, question=users_answer.question)
+			obj2.answer = None
+			obj2.save()
+
 
 		quiztaker.percentage = int(
 			correct_answers / quiztaker.quiz.question_set.count() * 100)
 
 		quiztaker.score = int(correct_answers)
-
-		#Debug	
-		print(quiztaker.score)
+		quiztaker.avg_quiz_score += int(correct_answers)/quiztaker.total_quizzes_taken
 
 		quiztaker.save()
 

@@ -18,6 +18,11 @@ from corsheaders.defaults import default_headers
 
 from datetime import timedelta
 
+import environ
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -26,8 +31,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'k(1mumqm#pn^5pf&+44o8lz*3-ajm((v51x@o130k0x7u@2jto'
-
+# SECRET_KEY = 'k(1mumqm#pn^5pf&+44o8lz*3-ajm((v51x@o130k0x7u@2jto'
+SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -59,7 +64,7 @@ INSTALLED_APPS = [
     'nested_admin',
     #Debug 
     'debug_toolbar',
-     # Custom App routes
+    # Custom App routes
     'apps.users',
     'apps.courses',
     'apps.course_modules',
@@ -68,6 +73,7 @@ INSTALLED_APPS = [
     'apps.badge',
     'apps.practice_test',
     'apps.feedback',
+    'apps.userstatistics'
 ]
 
 SITE_ID = 1
@@ -135,30 +141,23 @@ REST_FRAMEWORK = {
     # Permission Policies
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.StaticHTMLRenderer',
     ]
 }
 
 # MySQL remote database
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'k25DSFnXJL',
-#         'USER': 'k25DSFnXJL',
-#         'PASSWORD': 'LRPiEkjAyT',
-#         'HOST': 'remotemysql.com',
-#         'PORT': '3306',
-#     }
-# }
-
-#  Running on local host
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'lmsapi',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'NAME': 'system_db',
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -213,8 +212,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'test.littlms@gmail.com'
-EMAIL_HOST_PASSWORD = 'litt2020'
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
@@ -268,5 +267,7 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=3),
 }
 
+#increase fields upload limit
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 django_heroku.settings(locals())

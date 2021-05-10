@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('rating', models.PositiveSmallIntegerField(default=0, validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(5)])),
-                ('message', models.TextField()),
+                ('message', models.TextField(max_length=200)),
                 ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='feedback', to='courses.Course')),
             ],
             options={

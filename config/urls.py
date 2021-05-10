@@ -49,8 +49,7 @@ urlpatterns = [
     path('api/register/', include('rest_auth.registration.urls')), # Register an account unused
 
     # User Update Profile info
-    # path('api/users/profile/<int:pk>/', UserProfileView.as_view(),
-    #      name='update profile'),  # Update Profile
+    path('api/users/profile/<int:pk>/', UserProfileView.as_view(), name='update profile'),  # Update Profile
 
     # User Data Info
     path('api/current', CurrentUserView.as_view(), name='current profile'), # Get Current User
@@ -64,12 +63,12 @@ urlpatterns = [
 
     # path('api/quiz/', include('apps.practice_test.urls')),
 
-   	path("my-quizzes/", MyQuizListAPI.as_view()),
-   	path("quizzes/", QuizListAPI.as_view()),
-   	path("save-answer/", SaveUsersAnswer.as_view()),
-   	re_path(r"quizzes/(?P<slug>[\w\-]+)/$", QuizDetailAPI.as_view()),
-	re_path(r"quizzes/(?P<slug>[\w\-]+)/result/$", QuizResultAPI.as_view()),
-   	re_path(r"quizzes/(?P<slug>[\w\-]+)/submit/$", SubmitQuizAPI.as_view()),
+    path("my-quizzes/", MyQuizListAPI.as_view()),
+    path("quizzes/", QuizListAPI.as_view()),
+    path("save-answer/", SaveUsersAnswer.as_view()),
+    re_path(r"quizzes/(?P<slug>[\w\-]+)/$", QuizDetailAPI.as_view()),
+    re_path(r"quizzes/(?P<slug>[\w\-]+)/result/$", QuizResultAPI.as_view()),
+    re_path(r"quizzes/(?P<slug>[\w\-]+)/submit/$", SubmitQuizAPI.as_view()),
 ]
 
 if settings.DEBUG:

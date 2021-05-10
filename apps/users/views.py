@@ -10,6 +10,7 @@ from .models import User, UserProfile
 # # Create your views here.
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import generics
 
 from django.http import JsonResponse
 from django.core.exceptions import PermissionDenied
@@ -31,6 +32,7 @@ from .serializers import ChangePasswordSerializer
 from django.contrib.sites.shortcuts import get_current_site
 
 current_site = "https://littapi.herokuapp.com"
+current_site = "127.0.0.1"
     # ========================#
     # Activate account (email verify)
     # ========================#
@@ -58,8 +60,7 @@ def activate(request, uidb64, token):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('id', 'firstname', 'lastname',
-                  'email', 'password', 'student_type')
+        fields = ('id', 'firstname', 'lastname', 'email', 'password', 'student_type')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 8}}
 
     def create(self, validated_data):
@@ -122,21 +123,24 @@ class CurrentUserView(APIView):
 
 
 # @permission_classes([IsAuthenticated])
-class UserProfileView(APIView):
+class UserProfileView(generics.UpdateAPIView):
+    serializer_class = UserProfileSerializer
     def get(self, request, pk):
-        profile = UserProfile.objects.get(user=pk)
+        current_user = request.user
+        profile = UserProfile.objects.get(user=current_user)
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
 
-    def post(self, request, pk):
+    def patch(self, request, pk):
         # name, bio, github_username, avatar
+        current_user = request.user
         profile = UserProfile(
             **request.data
         )
-        profile.user = get_user_model().objects.get(pk=pk)
+        profile.user = get_user_model().objects.get(pk=current_user.id)
         profile.save()
         
-        return Response('Success')
+        return Response(self.get_serializer(profile).data)
 
 
 # ==================================================

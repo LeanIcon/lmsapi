@@ -26,6 +26,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Question
 		fields = "__all__"
+		extra_kwargs = {"content": {"trim_whitespace": False}}
 
 
 class UsersAnswerSerializer(serializers.ModelSerializer):
@@ -96,6 +97,7 @@ class QuizDetailSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Quiz
 		fields = "__all__"  
+		extra_kwargs = {"content": {"trim_whitespace": False}}
 
 	def get_quiztakers_set(self, obj):
 		try:

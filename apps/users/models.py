@@ -88,6 +88,8 @@ class UserProfile(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
+    
+    # user_data = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_data')
     # preferred_name = models.CharField(max_length=100)
     avatar_url = models.CharField(max_length=255, null=True)
     bio = models.TextField(default='', blank=True)
