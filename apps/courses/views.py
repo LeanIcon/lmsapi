@@ -11,16 +11,19 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
 from .models import Course
-
+from apps.course_modules.views import CourseModuleSerializer
+from apps.feedback.views import FeedbackSerializer
 
 class CourseLectureSerializer(serializers.ModelSerializer):
+    modules = CourseModuleSerializer(many=True)
+    feedback = FeedbackSerializer(many=True)
     class Meta:
         model = Course
-        fields = ('id', 'title', 'description', 'date', 'duration',
-                    'resource1_url', 'resource2_url', 'resource3_url',
-                    'is_required', 'video1_url', 'video2_url' , 'video3_url',
-                    'course_content_one', 'course_content_two',
-                    'course_content_three', 'course_content_four',)
+        fields = (  'id', 'title', 'description', 'date', 'duration',
+                    'course_overview', 'resource_url', 'modules', 'feedback',
+                    'is_required', 'video_url', 'course_content_one',
+                    'course_content_two'
+                )
 
 
 # @api_view(["GET", "POST", "PUT"])

@@ -10,9 +10,10 @@ from .models import User, UserProfile
 # # Create your views here.
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import generics
 
 from django.http import JsonResponse
-
+from django.core.exceptions import PermissionDenied
 
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -30,7 +31,8 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from .serializers import ChangePasswordSerializer
 from django.contrib.sites.shortcuts import get_current_site
 
-
+current_site = "https://littapi.herokuapp.com"
+current_site = "127.0.0.1"
     # ========================#
     # Activate account (email verify)
     # ========================#
@@ -58,8 +60,7 @@ def activate(request, uidb64, token):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('id', 'firstname', 'lastname',
-                  'email', 'password', 'student_type')
+        fields = ('id', 'firstname', 'lastname', 'email', 'password', 'student_type')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 8}}
 
     def create(self, validated_data):
@@ -70,7 +71,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         user.save()
 
-        current_site = 'http//:127.0.0.1'
+        # current_site = 'https://littapi.herokuapp.com'
 
         subject = 'Activate Your LMS Account'
         message = {
@@ -110,14 +111,36 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
 
+    def list(self, request, *args, **kwargs):
+        raise PermissionDenied()
 
 
-@permission_classes([IsAuthenticated])
-class UserProfileView(APIView):
+class CurrentUserView(APIView):
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+
+
+# @permission_classes([IsAuthenticated])
+class UserProfileView(generics.UpdateAPIView):
+    serializer_class = UserProfileSerializer
     def get(self, request, pk):
-        profile = UserProfile.objects.get(user=request.user)
+        current_user = request.user
+        profile = UserProfile.objects.get(user=current_user)
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
+
+    def patch(self, request, pk):
+        # name, bio, github_username, avatar
+        current_user = request.user
+        profile = UserProfile(
+            **request.data
+        )
+        profile.user = get_user_model().objects.get(pk=current_user.id)
+        profile.save()
+        
+        return Response(self.get_serializer(profile).data)
 
 
 # ==================================================
@@ -176,7 +199,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
 
-    current_site = get_current_site(request)
+    # current_site = get_current_site(request)
 
     subject = "Password Reset for {title}".format(title="LiTT LMS")
     

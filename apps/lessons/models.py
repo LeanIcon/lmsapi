@@ -3,36 +3,46 @@ from django.db import models
 # Create your models here.
 
 from apps.utils.models import Timestamps
-from apps.courses.models import Course
-
+from apps.course_modules.models import Course_Module
+from django.contrib.auth import get_user_model
+from django.conf import settings
 
 class Lesson(models.Model):
     title = models.CharField(max_length=100, unique=True)
     description = models.TextField()
-    order_number = models.IntegerField(unique=True, null=False)
+    lesson_number = models.IntegerField(unique=True, null=False)
     # lecturer_name = models.CharField(max_length=100, default='',blank=True)
-
-    lesson_content_one = models.TextField()
-    lesson_content_two = models.TextField(null=True)
-    lesson_content_three = models.TextField(null=True)
-
+    content_one = models.TextField()
+    content_two = models.TextField(null=True, blank=True)
+    content_three = models.TextField(null=True, blank=True)
     date = models.DateField(null=True)
+    duration = models.IntegerField(help_text='Enter number of hours', null=True)
 
-    duration = models.IntegerField(
-        help_text='Enter number of hours', null=True)
+    video_one = models.CharField(max_length=255, null=True)
+    video_two = models.CharField(max_length=255, null=True, blank=True)
 
-    video1_url = models.CharField(max_length=255, null=True)
-    video2_url = models.CharField(max_length=255, null=True)
+    resource_url = models.CharField(max_length=255, null=True)
 
-    resource1_url = models.CharField(max_length=255, null=True)
-    resource2_url = models.CharField(max_length=255, null=True)
-
-
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course_module = models.ForeignKey(Course_Module, on_delete=models.CASCADE, related_name='lessons')
+    # status = models.ForeignKey(
+    #     Lesson_Status, on_delete=models.CASCADE, related_name='status')
 
     def __str__(self):
         return self.title
 
     class Meta:
-        ordering = ['order_number']
+        unique_together = ['course_module', 'title']
+        ordering = ['lesson_number']
 
+
+class Lesson_Status(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
+
+
+# =================================== #
+# Note :
+# lessons order sholud not be unique
+# Meta ordering should be changed to course module
+# =================================== #

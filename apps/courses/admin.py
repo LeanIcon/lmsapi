@@ -6,8 +6,8 @@ from .models import Course
 
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('title', 'title', 'date')
-    search_fields = ('title', 'title')
+    list_display = ('title', 'course_overview', 'date')
+    search_fields = ('title', 'course_overview')
 
 
 admin.site.register(Course, CourseAdmin)

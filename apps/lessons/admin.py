@@ -9,8 +9,8 @@ from .models import Lesson
 
 
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ('title', 'order_number', 'date')
-    search_fields = ('title', 'order_number')
+    list_display = ('title', 'lesson_number', 'date', 'course_module')
+    search_fields = ('title', 'lesson_number', 'course')
 
 
 admin.site.register(Lesson, LessonAdmin)

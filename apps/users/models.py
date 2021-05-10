@@ -88,14 +88,20 @@ class UserProfile(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
+    
+    # user_data = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_data')
     # preferred_name = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='profile-images', null=True)
-
+    avatar_url = models.CharField(max_length=255, null=True)
+    bio = models.TextField(default='', blank=True)
     phone = models.CharField(max_length=50, null=True)
-    timezone = models.CharField(max_length=50, null=True)
-    location = models.CharField(max_length=60, null=True)
-    linkedIn_address = models.CharField(max_length=60, null=True)
-    facebook_address = models.CharField(max_length=60, null=True)
+    profession = models.CharField(default='', null=True, max_length=50)
+    profession_info = models.CharField(default='', null=True, max_length=50)
+
+    education = models.CharField(default='', null=True, max_length=50)
+    location = models.CharField(default='', max_length=60, null=True)
+    state_region = models.CharField(default='', max_length=60, null=True)
+    linkedIn_address = models.CharField(default='', max_length=60, null=True)
+    facebook_address = models.CharField(default='', max_length=60, null=True)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'

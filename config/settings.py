@@ -18,6 +18,11 @@ from corsheaders.defaults import default_headers
 
 from datetime import timedelta
 
+import environ
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -26,8 +31,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'k(1mumqm#pn^5pf&+44o8lz*3-ajm((v51x@o130k0x7u@2jto'
-
+# SECRET_KEY = 'k(1mumqm#pn^5pf&+44o8lz*3-ajm((v51x@o130k0x7u@2jto'
+SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -56,14 +61,19 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
     'django_rest_passwordreset',
+    'nested_admin',
     #Debug 
     'debug_toolbar',
-     # Custom App routes
+    # Custom App routes
     'apps.users',
     'apps.courses',
+    'apps.course_modules',
     'apps.lessons',
     'apps.certificate',
     'apps.badge',
+    'apps.practice_test',
+    'apps.feedback',
+    'apps.userstatistics'
 ]
 
 SITE_ID = 1
@@ -124,13 +134,18 @@ REST_FRAMEWORK = {
     # Authentication Scheme
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     # Permission Policies
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.StaticHTMLRenderer',
     ]
 }
 
@@ -138,11 +153,11 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'k25DSFnXJL',
-        'USER': 'k25DSFnXJL',
-        'PASSWORD': 'LRPiEkjAyT',
-        'HOST': 'remotemysql.com',
-        'PORT': '3306',
+        'NAME': 'system_db',
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -197,8 +212,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'test.littlms@gmail.com'
-EMAIL_HOST_PASSWORD = 'litt2020'
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
@@ -210,13 +225,14 @@ ACCOUNT_USERNAME_REQUIRED = False
 AUTH_PROFILE_MODULE = 'users.UserProfile'
 
 
-APPEND_SLASH=False
+# APPEND_SLASH=False
 
 CORS_ORIGIN_ALLOW_ALL = True
 
 INTERNAL_IPS = [
     # ...
     '127.0.0.1',
+    '54.197.91.173'
     # ...
 ]
 
@@ -226,8 +242,8 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
 
@@ -247,9 +263,11 @@ SIMPLE_JWT = {
     'JTI_CLAIM': 'jti',
 
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=15),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=3),
 }
 
+#increase fields upload limit
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 django_heroku.settings(locals())
