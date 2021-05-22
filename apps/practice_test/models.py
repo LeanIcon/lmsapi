@@ -6,8 +6,21 @@ from django.dispatch import receiver
 from django.conf import settings
 
 
+class QuizCategory(models.Model):
+	name = models.CharField(max_length=100)
+	slug = models.SlugField()
+
+	class Meta:
+		ordering = ('name', )
+
+	def __str__(self):
+		return self.name
+	
+	def get_absolute_url(self):
+		return f'/{self.slug}'
 
 class Quiz(models.Model):
+	category = models.ForeignKey(QuizCategory, related_name="quiz", on_delete=models.CASCADE, default=1)
 	name = models.CharField(max_length=100)
 	description = models.CharField(max_length=70)
 	slug = models.SlugField(blank=True)
@@ -20,6 +33,9 @@ class Quiz(models.Model):
 
 	def __str__(self):
 		return self.name
+
+	def get_absolute_url(self):
+		return f'/{self.category.slug}/{self.slug}'
 
 
 class Question(models.Model):
