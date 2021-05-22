@@ -7,6 +7,12 @@ Vagrant.configure("2") do |config|
   
   config.vm.provision "shell", inline: "sudo service mysql start", run: "always"
 
+  config.vm.provider "virtualbox" do |v|
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+  end
+  
+
   config.vm.provider :aws do |aws, override|
     aws.access_key_id = "YOUR KEY"
     aws.secret_access_key = "YOUR SECRET KEY"
