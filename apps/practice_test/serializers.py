@@ -144,5 +144,4 @@ class QuizItemSerializer(serializers.ModelSerializer):
 		read_only_fields = ["category", "name", "description"]
 
 	def get_quiz_category(self, obj):
-		print(obj)
 		return obj.values()

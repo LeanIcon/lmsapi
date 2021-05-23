@@ -208,7 +208,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         subject,
         # 'Please Activate your account' + message.token,
         email_plaintext_message,
-        'no-reply@gmail.com',
+        'no-reply@leanicontechnology.com',
         [reset_password_token.user.email],
         fail_silently=False
     )

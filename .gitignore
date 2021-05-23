@@ -5,7 +5,7 @@
 ### Vagrant ###
 # General
 .vagrant/
-
+.env
 *.sql
 data-acp.txt
 db_new.sql

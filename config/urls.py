@@ -9,7 +9,7 @@ from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshVie
 
 from django.contrib.auth import views as auth_views
 
-from apps.practice_test.views import MyQuizListAPI, QuizListAPI, QuizDetailAPI, SaveUsersAnswer, SubmitQuizAPI, QuizResultAPI, QuizCategoryViewSet, QuizCategoriesViewSet, CategoryDetail
+from apps.practice_test.views import MyQuizListAPI, QuizListAPI, QuizDetailAPI, SaveUsersAnswer, SubmitQuizAPI, QuizResultAPI, QuizCategoriesViewSet, CategoryDetail
     
 app_name = 'app.users'
 
@@ -66,9 +66,8 @@ urlpatterns = [
     path("my-quizzes/", MyQuizListAPI.as_view()),
     path("quizzes/", QuizListAPI.as_view()),
     path("save-answer/", SaveUsersAnswer.as_view()),    
-	path("category/", QuizCategoriesViewSet.as_view({'get': 'list'})),
-    path('products/<slug:category_slug>/', CategoryDetail.as_view()),
-    re_path(r"quizzes/category/(?P<category>[\w\-]+)/$", QuizCategoryViewSet.as_view()),
+	path("quiz/category/", QuizCategoriesViewSet.as_view({'get': 'list'})),
+    path('quiz/category/<slug:category_slug>/', CategoryDetail.as_view()),
     re_path(r"quizzes/(?P<slug>[\w\-]+)/$", QuizDetailAPI.as_view()),
     re_path(r"quizzes/(?P<slug>[\w\-]+)/result/$", QuizResultAPI.as_view()),
     re_path(r"quizzes/(?P<slug>[\w\-]+)/submit/$", SubmitQuizAPI.as_view()),
