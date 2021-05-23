@@ -151,21 +151,13 @@ REST_FRAMEWORK = {
 
 # MySQL remote database
 DATABASES = {
-    'default': {
+    env('DB_TYPE'): {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wTu6xvUDj0',
-        'USER': 'wTu6xvUDj0',
-        'PASSWORD': 'zDAjgMq0a6',
-        'HOST': 'remotemysql.com',
-        'PORT': '',
-    },
-    'development': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'system_db',
+        'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '',
+        'HOST': env('DB_HOST'),
+        'PORT': '3306',
     }
 }
 

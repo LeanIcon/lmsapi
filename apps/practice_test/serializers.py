@@ -1,4 +1,4 @@
-from .models import Quiz, QuizTaker, Question, Answer, UsersAnswer
+from .models import Quiz, QuizTaker, Question, Answer, UsersAnswer, QuizCategory
 from rest_framework import serializers
 
 
@@ -7,9 +7,10 @@ class QuizListSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Quiz
-		fields = ["id", "name", "description", "slug", "questions_count"]
+		fields = "__all__"
 		read_only_fields = ["questions_count"]
 
+		
 	def get_questions_count(self, obj):
 		return obj.question_set.all().count()
 
@@ -32,6 +33,11 @@ class QuestionSerializer(serializers.ModelSerializer):
 class UsersAnswerSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = UsersAnswer
+		fields = "__all__"
+
+class QuizCategorySerializer(serializers.ModelSerializer):
+	class Meta:
+		model = QuizCategory
 		fields = "__all__"
 
 
@@ -127,3 +133,16 @@ class QuizResultSerializer(serializers.ModelSerializer):
 
 		except QuizTaker.DoesNotExist:
 			return None
+
+
+class QuizItemSerializer(serializers.ModelSerializer):
+	quiz_category = serializers.SerializerMethodField()
+
+	class Meta:
+		model = Quiz
+		fields = "__all__"
+		read_only_fields = ["category", "name", "description"]
+
+	def get_quiz_category(self, obj):
+		print(obj)
+		return obj.values()

@@ -9,6 +9,7 @@ from django.conf import settings
 class QuizCategory(models.Model):
 	name = models.CharField(max_length=100)
 	slug = models.SlugField()
+	img_url = models.CharField(max_length=100, blank=True)
 
 	class Meta:
 		ordering = ('name', )

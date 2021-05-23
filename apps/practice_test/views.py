@@ -1,9 +1,78 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
-from .models import Answer, Question, Quiz, QuizTaker, UsersAnswer
-from .serializers import MyQuizListSerializer, QuizDetailSerializer, QuizListSerializer, QuizResultSerializer, UsersAnswerSerializer
+from rest_framework.views import APIView
+from .models import Answer, Question, Quiz, QuizTaker, UsersAnswer, QuizCategory
+from .serializers import MyQuizListSerializer, QuizDetailSerializer, QuizListSerializer, QuizResultSerializer, UsersAnswerSerializer, QuizCategorySerializer, QuizItemSerializer
+from django.http import Http404
+
+class QuizCategoriesViewSet(viewsets.ModelViewSet):
+	serializer_class = QuizCategorySerializer
+	permission_classes = [
+		permissions.IsAuthenticated
+	]
+	queryset = QuizCategory.objects.all() 
+
+
+class CategoryDetail(APIView):
+	def get_object(self, category_slug):
+		try: 
+			print('DEBUG 1')
+			return Quiz.objects.filter(category=category_slug)
+		except Quiz.DoesNotExist:
+			raise Http404
+
+	def get(self, request, category_slug, format=None):
+		print('DEBUG 2')
+		category = self.get_object(category_slug)
+		serializer = QuizItemSerializer(category)
+
+		print('DEBUG 3')
+
+		return Response(serializer.data)
+
+class QuizCategoryViewSet(generics.RetrieveAPIView):
+	serializer_class = QuizItemSerializer
+	permission_classes = [
+		permissions.IsAuthenticated
+	]
+
+	# def get(self, *args, **kwargs):
+	# 		print(category)
+	# 		quiz = get_object_or_404(Quiz, category=category)
+
+	# 		print(quiz)
+	# 		return Response({'quiz': self.get_serializer(quiz, context={'request': self.request}).data})
+
+	lookup_field = 'category'
+	def get_queryset(self):
+		queryset = Quiz.objects.all()
+		query = self.kwargs["category"]
+		print(query)
+		print(query)
+		print(query)
+		print(query)
+		print(query)
+		print(query)
+
+
+		if query:
+			queryset = queryset.filter(
+				Q(name__icontains=query) |
+				Q(category__icontains=query)
+			).distinct()
+
+		return queryset
+
+	# def get_queryset(self, *args, **kwargs):
+	# 	category = self.kwargs["category"]
+	# 	# queryset = Quiz.objects.filter(category=category)
+	# 	# return queryset
+	# 	profile = Quiz.objects.all()
+	# 	serializer = QuizItemSerializer(profile)
+	# 	print(category)
+	# 	return Response(serializer.data)
 
 
 class MyQuizListAPI(generics.ListAPIView):
