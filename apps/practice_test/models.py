@@ -21,7 +21,7 @@ class QuizCategory(models.Model):
 		return f'/{self.slug}'
 
 class Quiz(models.Model):
-	category = models.ForeignKey(QuizCategory, related_name="category", on_delete=models.CASCADE, default=1)
+	category = models.ForeignKey(QuizCategory, related_name="quiz", on_delete=models.CASCADE, default=1)
 	name = models.CharField(max_length=100)
 	description = models.CharField(max_length=70)
 	slug = models.SlugField(blank=True)
@@ -34,10 +34,10 @@ class Quiz(models.Model):
 		verbose_name_plural = "Quizzes"
 
 	def __str__(self):
-		return self.name, self.category
+		return self.name
 
 	def get_absolute_url(self):
-		return f'/{self.category.slug}/{self.slug}'
+		return f'/{self.slug}'
 
 
 class Question(models.Model):
