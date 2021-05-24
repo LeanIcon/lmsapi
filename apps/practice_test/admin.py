@@ -16,7 +16,7 @@ class QuestionInline(nested_admin.NestedTabularInline):
 
 class QuizAdmin(nested_admin.NestedModelAdmin):
 	inlines = [QuestionInline, ]
-	list_display = ('name', 'category', 'timestamp')
+	list_display = ('name', 'category', 'timestamp', 'order')
 	search_fields = ('category', 'name')
 
 

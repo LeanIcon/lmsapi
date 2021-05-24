@@ -21,19 +21,20 @@ class QuizCategory(models.Model):
 		return f'/{self.slug}'
 
 class Quiz(models.Model):
-	category = models.ForeignKey(QuizCategory, related_name="quiz", on_delete=models.CASCADE, default=1)
+	category = models.ForeignKey(QuizCategory, related_name="category", on_delete=models.CASCADE, default=1)
 	name = models.CharField(max_length=100)
 	description = models.CharField(max_length=70)
 	slug = models.SlugField(blank=True)
 	roll_out = models.BooleanField(default=False)
 	timestamp = models.DateTimeField(auto_now_add=True)
+	order = models.IntegerField(default=0)
 
 	class Meta:
 		ordering = ['timestamp', ]
 		verbose_name_plural = "Quizzes"
 
 	def __str__(self):
-		return self.name
+		return self.name, self.category
 
 	def get_absolute_url(self):
 		return f'/{self.category.slug}/{self.slug}'
