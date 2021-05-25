@@ -61,6 +61,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django_rest_passwordreset',
     'nested_admin',
+    #Rich Text Editor
+    'ckeditor', 
     #Debug 
     'debug_toolbar',
     # Custom App routes

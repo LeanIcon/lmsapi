@@ -5,6 +5,8 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.conf import settings
 
+from ckeditor.fields import RichTextField
+
 
 class QuizCategory(models.Model):
 	name = models.CharField(max_length=100)
@@ -42,7 +44,7 @@ class Quiz(models.Model):
 
 class Question(models.Model):
 	quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-	label = models.TextField()
+	label = RichTextField()
 	image_url = models.CharField(max_length=100, blank=True, null=True)
 	order = models.IntegerField(default=0)
 
