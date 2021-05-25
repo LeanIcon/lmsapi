@@ -5,8 +5,8 @@
 ### Vagrant ###
 # General
 .vagrant/
-
-
+.env
+*.sql
 data-acp.txt
 db_new.sql
 # Log files (if you are creating logs in debug mode, uncomment this)
@@ -130,7 +130,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+# .env
 .venv
 env/
 venv/

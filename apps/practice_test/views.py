@@ -1,10 +1,47 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
-from .models import Answer, Question, Quiz, QuizTaker, UsersAnswer
-from .serializers import MyQuizListSerializer, QuizDetailSerializer, QuizListSerializer, QuizResultSerializer, UsersAnswerSerializer
+from rest_framework.views import APIView
+from .models import Answer, Question, Quiz, QuizTaker, UsersAnswer, QuizCategory
+from .serializers import MyQuizListSerializer, QuizDetailSerializer, QuizListSerializer, QuizResultSerializer, UsersAnswerSerializer, QuizCategorySerializer, QuizItemSerializer
+from django.http import Http404
 
+class QuizCategoriesViewSet(viewsets.ModelViewSet):
+	serializer_class = QuizCategorySerializer
+	permission_classes = [
+		permissions.IsAuthenticated
+	]
+	queryset = QuizCategory.objects.all() 
+
+
+
+
+class QuizCategoryDetail(APIView):
+	def get_object(self, category_slug):
+		try: 
+			return Quiz.objects.filter(category=category_slug)
+		except Quiz.DoesNotExist:
+			raise Http404
+
+	def get(self, request, category_slug, format=None):
+		category = self.get_object(category_slug)
+		serializer = QuizItemSerializer(category)
+
+		return Response(serializer.data)
+
+class CategoryDetail(generics.RetrieveAPIView):
+	serializer_class = QuizCategorySerializer
+	permission_classes = [
+		permissions.IsAuthenticated
+	]
+
+	def get(self, *args, **kwargs):
+
+		category_id = self.kwargs["category_id"]
+		category = get_object_or_404(QuizCategory, id=category_id)
+		# category = QuizCategory.objects.get(slug=category_id)
+		return Response({'category': self.get_serializer(category, context={'request': self.request}).data})
 
 class MyQuizListAPI(generics.ListAPIView):
 	permission_classes = [
@@ -104,17 +141,9 @@ class SubmitQuizAPI(generics.GenericAPIView):
 		question = get_object_or_404(Question, id=question_id)
 
 		quiz = Quiz.objects.get(slug=self.kwargs['slug'])
-		print('=====================//Debug//=======================')
-		print(answer_id is not None)
-		print(answer_id)
-		print(type(answer_id))
-		print('=====================//Debug//=======================')
 
 		if answer_id is not None:
 			answer = get_object_or_404(Answer, id=answer_id)
-			print('=====================//Debug//=======================')
-			print(answer)
-			print('=====================//Debug//=======================')
 			obj = get_object_or_404(
 				UsersAnswer, quiz_taker=quiztaker, question=question)
 			obj.answer = answer
@@ -125,11 +154,7 @@ class SubmitQuizAPI(generics.GenericAPIView):
 		correct_answers = 0
 
 		for users_answer in UsersAnswer.objects.filter(quiz_taker=quiztaker):
-			answer = Answer.objects.get(question=users_answer.question, is_correct=True)			
-			print('=====================//Debug//=======================')
-			print(answer) 
-			print(users_answer.answer)
-			print('=====================//Debug//=======================')
+			answer = Answer.objects.get(question=users_answer.question, is_correct=True)
 			if users_answer.answer == answer:
 				correct_answers += 1
 

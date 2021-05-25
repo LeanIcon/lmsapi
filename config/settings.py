@@ -31,10 +31,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'k(1mumqm#pn^5pf&+44o8lz*3-ajm((v51x@o130k0x7u@2jto'
 SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG_MODE")
 
 ALLOWED_HOSTS = ['*']
 
@@ -62,6 +61,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django_rest_passwordreset',
     'nested_admin',
+    #Rich Text Editor
+    'ckeditor', 
     #Debug 
     'debug_toolbar',
     # Custom App routes
@@ -151,13 +152,13 @@ REST_FRAMEWORK = {
 
 # MySQL remote database
 DATABASES = {
-    'default': {
+    env('DB_TYPE'): {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'system_db',
+        'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '',
+        'HOST': env('DB_HOST'),
+        'PORT': '3306',
     }
 }
 
@@ -209,9 +210,9 @@ MEDIA_URL = '/media/'
 ACCOUNT_ACTIVATION_DAYS = 1
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.ionos.co.uk'
 EMAIL_USE_TLS = True
-EMAIL_PORT = 587
+EMAIL_PORT = 25
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 

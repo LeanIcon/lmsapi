@@ -5,14 +5,31 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.conf import settings
 
+from ckeditor.fields import RichTextField
 
+
+class QuizCategory(models.Model):
+	name = models.CharField(max_length=100)
+	slug = models.SlugField()
+	img_url = models.CharField(max_length=100, blank=True)
+
+	class Meta:
+		ordering = ('name', )
+
+	def __str__(self):
+		return self.name
+	
+	def get_absolute_url(self):
+		return f'/{self.slug}'
 
 class Quiz(models.Model):
+	category = models.ForeignKey(QuizCategory, related_name="quiz", on_delete=models.CASCADE, default=1)
 	name = models.CharField(max_length=100)
 	description = models.CharField(max_length=70)
 	slug = models.SlugField(blank=True)
 	roll_out = models.BooleanField(default=False)
 	timestamp = models.DateTimeField(auto_now_add=True)
+	order = models.IntegerField(default=0)
 
 	class Meta:
 		ordering = ['timestamp', ]
@@ -21,10 +38,13 @@ class Quiz(models.Model):
 	def __str__(self):
 		return self.name
 
+	def get_absolute_url(self):
+		return f'/{self.slug}'
+
 
 class Question(models.Model):
 	quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-	label = models.TextField()
+	label = RichTextField()
 	image_url = models.CharField(max_length=100, blank=True, null=True)
 	order = models.IntegerField(default=0)
 
