@@ -197,7 +197,8 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     :return:
     """
 
-    email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+    # email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+    email_plaintext_message = "{}?token={}".format(settings.API_RECEIVER, reset_password_token.key)
 
     # current_site = get_current_site(request)
 

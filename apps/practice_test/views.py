@@ -152,11 +152,16 @@ class SubmitQuizAPI(generics.GenericAPIView):
 		quiztaker.completed = True
 		quiztaker.total_quizzes_taken += 1
 		correct_answers = 0
+		wrong_answers = []
 
 		for users_answer in UsersAnswer.objects.filter(quiz_taker=quiztaker):
 			answer = Answer.objects.get(question=users_answer.question, is_correct=True)
+			# wrong_answer = Answer.objects.get(question=users_answer.question, is_correct=True)
 			if users_answer.answer == answer:
 				correct_answers += 1
+			if  users_answer.answer != answer:
+				wrong_answers.append(users_answer)
+
 
 			obj2 = get_object_or_404(UsersAnswer, quiz_taker=quiztaker, question=users_answer.question)
 			obj2.answer = None

@@ -37,6 +37,7 @@ DEBUG = env("DEBUG_MODE")
 
 ALLOWED_HOSTS = ['*']
 
+API_RECEIVER = env('API_RECEIVER')
 
 # Application definition
 
@@ -212,7 +213,7 @@ ACCOUNT_ACTIVATION_DAYS = 1
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.ionos.co.uk'
 EMAIL_USE_TLS = True
-EMAIL_PORT = 25
+EMAIL_PORT = 587
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
