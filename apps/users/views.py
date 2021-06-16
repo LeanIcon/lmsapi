@@ -86,13 +86,14 @@ class UserSerializer(serializers.ModelSerializer):
         send_mail(
             subject,
             # 'Please Activate your account' + message.token,
-            current_site + '/accounts/activate/' + message['uid'] +'/' + message['token'] + '/',
-            email_from,
+            settings.API_RECEIVER + '/accounts/activate/' + message['uid'] +'/' + message['token'] + '/',
+            'no-reply@leanicontechnology.co.uk',
             [user.email],
             fail_silently=False
         )
         message_content = {
-            "message": "Please Confirm your email to complete registration."}
+            "message": "Please Confirm your email to complete registration."
+        }
 
         return user
 
@@ -209,7 +210,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         subject,
         # 'Please Activate your account' + message.token,
         email_plaintext_message,
-        'no-reply@leanicontechnology.com',
+        'no-reply@leanicontechnology.co.uk',
         [reset_password_token.user.email],
         fail_silently=False
     )

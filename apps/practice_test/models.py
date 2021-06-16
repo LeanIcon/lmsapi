@@ -10,6 +10,8 @@ from ckeditor.fields import RichTextField
 
 class QuizCategory(models.Model):
 	name = models.CharField(max_length=100)
+	description = models.TextField(blank=True, default='N/A')
+	related_topics = models.TextField(blank=True, default='N/A')
 	slug = models.SlugField()
 	img_url = models.CharField(max_length=100, blank=True)
 
