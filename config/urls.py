@@ -10,7 +10,8 @@ from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshVie
 from django.contrib.auth import views as auth_views
 
 from apps.practice_test.views import MyQuizListAPI, QuizListAPI, QuizDetailAPI, SaveUsersAnswer, SubmitQuizAPI, QuizResultAPI, QuizCategoriesViewSet, QuizCategoryDetail, CategoryDetail
-    
+from django.conf.urls.static import static
+
 app_name = 'app.users'
 
 urlpatterns = [
@@ -72,7 +73,7 @@ urlpatterns = [
     re_path(r"quizzes/(?P<slug>[\w\-]+)/$", QuizDetailAPI.as_view()),
     re_path(r"quizzes/(?P<slug>[\w\-]+)/result/$", QuizResultAPI.as_view()),
     re_path(r"quizzes/(?P<slug>[\w\-]+)/submit/$", SubmitQuizAPI.as_view()),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     import debug_toolbar

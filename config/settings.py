@@ -13,11 +13,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 # Configure Django App for Heroku.
 import django_heroku
-
 from corsheaders.defaults import default_headers
-
 from datetime import timedelta
-
 import environ
 # Initialise environment variables
 env = environ.Env()
@@ -25,7 +22,7 @@ environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -37,7 +34,9 @@ DEBUG = env("DEBUG_MODE")
 
 ALLOWED_HOSTS = ['*']
 
+API_RECEIVER = env('API_RECEIVER')
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Application definition
 
 INSTALLED_APPS = [
@@ -56,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
     'rest_auth.registration',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
@@ -74,7 +74,7 @@ INSTALLED_APPS = [
     'apps.badge',
     'apps.practice_test',
     'apps.feedback',
-    'apps.userstatistics'
+    'apps.userstatistics',
 ]
 
 SITE_ID = 1
@@ -115,7 +115,8 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'apps', 'users', 'templates'),
+                os.path.join(SETTINGS_PATH, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -180,6 +181,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'), 'templates',
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -209,10 +214,11 @@ MEDIA_URL = '/media/'
 # Configure SMTP
 ACCOUNT_ACTIVATION_DAYS = 1
 
+EMAIL_FROM = 'learning@leanicontechnology.co.uk'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.ionos.co.uk'
 EMAIL_USE_TLS = True
-EMAIL_PORT = 25
+EMAIL_PORT = 587
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
