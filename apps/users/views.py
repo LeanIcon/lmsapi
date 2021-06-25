@@ -199,7 +199,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     """
 
     # email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
-    email_plaintext_message = "{}/reset?token={}".format(settings.API_RECEIVER, reset_password_token.key)
+    email_plaintext_message = "Someone recently requested a password reset for {}. To reset your password please click the link {}/reset?token={} <br> If this is a mistake just ignore this email - your password will not be changed".format(reset_password_token.user.email, settings.API_RECEIVER, reset_password_token.key)
 
     # current_site = get_current_site(request)
 
