@@ -82,17 +82,18 @@ class UserSerializer(serializers.ModelSerializer):
         }
         # user.email_user(subject, message)
 
-        email_from = settings.EMAIL_HOST_USER
+        email_from = settings.EMAIL_FROM
         send_mail(
             subject,
             # 'Please Activate your account' + message.token,
-            current_site + '/accounts/activate/' + message['uid'] +'/' + message['token'] + '/',
+            settings.API_RECEIVER + '/accounts/activate/' + message['uid'] +'/' + message['token'] + '/',
             email_from,
             [user.email],
             fail_silently=False
         )
         message_content = {
-            "message": "Please Confirm your email to complete registration."}
+            "message": "Please Confirm your email to complete registration."
+        }
 
         return user
 
@@ -197,18 +198,19 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     :return:
     """
 
-    email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+    # email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+    email_plaintext_message = "{}/reset?token={}".format(settings.API_RECEIVER, reset_password_token.key)
 
     # current_site = get_current_site(request)
 
     subject = "Password Reset for {title}".format(title="LiTT LMS")
     
-    email_from = settings.EMAIL_HOST_USER
+    email_from = settings.EMAIL_FROM
     send_mail(
         subject,
         # 'Please Activate your account' + message.token,
         email_plaintext_message,
-        'no-reply@gmail.com',
+        email_from,
         [reset_password_token.user.email],
         fail_silently=False
     )

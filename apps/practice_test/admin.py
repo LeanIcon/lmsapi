@@ -1,7 +1,6 @@
 from django.contrib import admin
 import nested_admin
-from .models import Quiz, Question, Answer, QuizTaker, UsersAnswer
-
+from .models import Quiz, Question, Answer, QuizTaker, UsersAnswer, QuizCategory
 
 class AnswerInline(nested_admin.NestedTabularInline):
 	model = Answer
@@ -17,6 +16,8 @@ class QuestionInline(nested_admin.NestedTabularInline):
 
 class QuizAdmin(nested_admin.NestedModelAdmin):
 	inlines = [QuestionInline, ]
+	list_display = ('name', 'category', 'timestamp', 'order')
+	search_fields = ('category', 'name')
 
 
 class UsersAnswerInline(admin.TabularInline):
@@ -28,6 +29,7 @@ class QuizTakerAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Quiz, QuizAdmin)
+admin.site.register(QuizCategory)
 admin.site.register(Question)
 admin.site.register(Answer)
 admin.site.register(QuizTaker, QuizTakerAdmin)
