@@ -9,6 +9,8 @@
 *.sql
 data-acp.txt
 db_new.sql
+.vagrant*
+.ssh
 # Log files (if you are creating logs in debug mode, uncomment this)
 # *.log
 

@@ -13,11 +13,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 # Configure Django App for Heroku.
 import django_heroku
-
 from corsheaders.defaults import default_headers
-
 from datetime import timedelta
-
 import environ
 # Initialise environment variables
 env = environ.Env()
@@ -25,7 +22,7 @@ environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -39,6 +36,7 @@ ALLOWED_HOSTS = ['*']
 
 API_RECEIVER = env('API_RECEIVER')
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Application definition
 
 INSTALLED_APPS = [
@@ -76,7 +74,7 @@ INSTALLED_APPS = [
     'apps.badge',
     'apps.practice_test',
     'apps.feedback',
-    'apps.userstatistics'
+    'apps.userstatistics',
 ]
 
 SITE_ID = 1
@@ -88,7 +86,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -117,7 +115,8 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'apps', 'users', 'templates'),
+                os.path.join(SETTINGS_PATH, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -182,6 +181,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'), 'templates',
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -211,6 +214,7 @@ MEDIA_URL = '/media/'
 # Configure SMTP
 ACCOUNT_ACTIVATION_DAYS = 1
 
+EMAIL_FROM = 'learning@leanicontechnology.co.uk'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.ionos.co.uk'
 EMAIL_USE_TLS = True
