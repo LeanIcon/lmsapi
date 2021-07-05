@@ -2,6 +2,8 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
+import json
+from json import JSONEncoder
 from rest_framework.views import APIView
 from .models import Answer, Question, Quiz, QuizTaker, UsersAnswer, QuizCategory
 from .serializers import MyQuizListSerializer, QuizDetailSerializer, QuizListSerializer, QuizResultSerializer, UsersAnswerSerializer, QuizCategorySerializer, QuizItemSerializer
@@ -152,21 +154,22 @@ class SubmitQuizAPI(generics.GenericAPIView):
 		quiztaker.completed = True
 		quiztaker.total_quizzes_taken += 1
 		correct_answers = 0
-		wrong_answers = []
+		wrong_answer = {}
 
 		for users_answer in UsersAnswer.objects.filter(quiz_taker=quiztaker):
 			answer = Answer.objects.get(question=users_answer.question, is_correct=True)
 			# wrong_answer = Answer.objects.get(question=users_answer.question, is_correct=True)
 			if users_answer.answer == answer:
 				correct_answers += 1
-			if  users_answer.answer != answer:
-				wrong_answers.append(users_answer)
-
+			if  users_answer.answer != answer and users_answer.answer != None:
+				wrong_answer[str(users_answer)] = str(users_answer.answer)
+		
 
 			obj2 = get_object_or_404(UsersAnswer, quiz_taker=quiztaker, question=users_answer.question)
 			obj2.answer = None
 			obj2.save()
 
+		# wrong_answers = json.dumps(wrong_answer)
 
 		quiztaker.percentage = int(
 			correct_answers / quiztaker.quiz.question_set.count() * 100)
@@ -176,4 +179,4 @@ class SubmitQuizAPI(generics.GenericAPIView):
 
 		quiztaker.save()
 
-		return Response(self.get_serializer(quiz).data)
+		return Response({'quiz':self.get_serializer(quiz).data, 'wrong_anwers': wrong_answer})
