@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.network "forwarded_port", guest: 9000, host: 9000, host_ip: "127.0.0.1"
 
-  config.vm.synced_folder "../lmsapi", "/home/vagrant/lmsapi", type: "rsync", owner: "lms-admin ", group:"lms-admin ", mount_options:["dmode=775,fmode=777"]
+  config.vm.synced_folder "../lmsapi", "/home/vagrant/lmsapi", owner: "lms-admin ", group:"lms-admin ", mount_options:["dmode=775,fmode=777"]
   
   config.vm.provision "shell", inline: "sudo service mysql start", run: "always"
   

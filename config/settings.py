@@ -16,6 +16,7 @@ import django_heroku
 from corsheaders.defaults import default_headers
 from datetime import timedelta
 import environ
+
 # Initialise environment variables
 env = environ.Env()
 environ.Env.read_env()
@@ -36,9 +37,14 @@ ALLOWED_HOSTS = ['*']
 
 API_RECEIVER = env('API_RECEIVER')
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# Application definition
+# SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_SECURE = False
+# SECURE_SSL_REDIRECT = False
 
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -154,13 +160,16 @@ REST_FRAMEWORK = {
 DATABASES = {
     env('DB_TYPE'): {
         'ENGINE': 'django.db.backends.mysql',
+        # 'ENGINE': 'django.db.backends.postgresql',
         'NAME': env('DB_NAME'),
         'USER': env('DB_USER'),
         'PASSWORD': env('DB_PASSWORD'),
         'HOST': env('DB_HOST'),
         'PORT': '3306',
+        # 'PORT': '5432',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
