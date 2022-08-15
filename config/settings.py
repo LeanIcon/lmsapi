@@ -40,7 +40,7 @@ API_RECEIVER = env('API_RECEIVER')
 CSRF_TRUSTED_ORIGINS = ['lms.leanicontechnology.co.uk', 'localhost:3000']
 
 # SESSION_COOKIE_SECURE = False
-# CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 # SECURE_SSL_REDIRECT = False
 
 # SECURE_SSL_REDIRECT = True
