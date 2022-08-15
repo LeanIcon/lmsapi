@@ -37,6 +37,8 @@ current_site = "127.0.0.1"
     # ========================#
     # Activate account (email verify)
     # ========================#
+
+@csrf_exempt
 def activate(request, uidb64, token):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
